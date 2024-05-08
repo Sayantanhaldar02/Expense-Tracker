@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}
+  All Expence
+{% endblock %}
+
+{% block body %}
+  {% if not expences %}
+    <div class="container d-flex flex-column justify-content-center align-items-center">
+      <h1 class="text-center mt-4">No expense is created. Please create atleast one.</h1>
+      <div class="d-flex">
+        <button type="button" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Expense</button>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal2">Add Category</button>
+      </div>
+    </div>
+  {% else %}
+    <div class="container col-lg-10 mt-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3>All Expense</h3>
+        <div>
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Expense</button>
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal2">Add Category</button>
+        </div>
+      </div>
+      <table class="table table-bordered shadow-lg mt-4 p-4">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Category</th>
+            <th scope="col">Date</th>
+            <th scope="col">Update</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for expence in expences %}
+            <tr>
+              <td>{{ expence.expence_name }}</td>
+
+              <td>{{ expence.amount }}</td>
+              <td>{{ expence.category }}</td>
+              <td>{{ expence.date }}</td>
+              <td>
+                {% comment %} <a href="" class="btn btn-success">Update</a> {% endcomment %}
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal{{ expence.id }}">Update</button>
+              </td>
+              <td>
+                <a href="/delete/{{ expence.id }}/" class="btn btn-danger">Delete</a>
+              </td>
+            </tr>
+
+            {% comment %}expence category modal end{% endcomment %}
+            <div class="modal fade" id="exampleModal{{ expence.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Update Expense</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form method="post">
+                      {% csrf_token %}
+                      <input type="text" name="expence_id" value="{{ expence.id }}" hidden />
+                      <div class="mb-3">
+                        <label for="expence_name" class="form-label">Expense Title</label>
+                        <input type="text" value="{{ expence.expence_name }}" class="form-control" id="expence_name" name="expence_name" aria-describedby="emailHelp" required />
+                      </div>
+                      <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" value="{{ expence.amount }}" class="form-control" id="amount" name="amount" required />
+                      </div>
+                      <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" name="category" aria-label="Default select example" required>
+                          <option selected>Select</option>
+                          {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.category }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" value="{{ expence.date }}" class="form-control" id="date" name="date" required />
+                      </div>
+                      <div class="mb-3 d-flex justify-content-center w-100">
+                        <button type="submit" name="expense_update" class="btn btn-success w-100">Update</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% comment %}expence_modal start{% endcomment %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  {% comment %}expence_modal start{% endcomment %}
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Expense</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="expence_name" class="form-label">Expense Title</label>
+              <input type="text" class="form-control" id="expence_name" name="expence_name" aria-describedby="emailHelp" required />
+            </div>
+            <div class="mb-3">
+              <label for="amount" class="form-label">Amount</label>
+              <input type="number" class="form-control" id="amount" name="amount" required />
+            </div>
+            <div class="mb-3">
+              <label for="category" class="form-label">Category</label>
+              <select class="form-select" name="category" aria-label="Default select example" required>
+                <option selected>Select</option>
+                {% for category in categories %}
+                  <option value="{{ category.id }}">{{ category.category }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="date" class="form-label">Date</label>
+              <input type="date" class="form-control" id="date" name="date" required />
+            </div>
+            <div class="mb-3 d-flex justify-content-center w-100">
+              <button type="submit" name="expense_submit" class="btn btn-success w-100">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% comment %}expence_modal end{% endcomment %}
+
+  {% comment %}expence category modal start{% endcomment %}
+  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Category</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="category_name" class="form-label">Category Name</label>
+              <input type="text" class="form-control" id="category_name" name="category_name" aria-describedby="emailHelp" required />
+            </div>
+            <div class="mb-3 d-flex justify-content-center w-100">
+              <button type="submit" name="category_submit" class="btn btn-success w-100">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% comment %}expence_modal end{% endcomment %}
+{% endblock %}
